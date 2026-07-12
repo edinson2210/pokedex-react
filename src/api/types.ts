@@ -41,6 +41,9 @@ export interface PokemonSprites {
       front_default: string | null
       front_shiny: string | null
     }
+    dream_world?: {
+      front_default: string | null
+    }
   }
 }
 
@@ -69,6 +72,11 @@ export interface PokemonSpeciesGenus {
   language: NamedAPIResource
 }
 
+export interface PokemonSpeciesVariety {
+  is_default: boolean
+  pokemon: NamedAPIResource
+}
+
 export interface PokemonSpecies {
   id: number
   name: string
@@ -76,6 +84,7 @@ export interface PokemonSpecies {
   genera: PokemonSpeciesGenus[]
   evolution_chain: { url: string }
   color: NamedAPIResource
+  varieties: PokemonSpeciesVariety[]
 }
 
 export interface EvolutionDetail {
@@ -99,6 +108,12 @@ export interface PokemonType {
   id: number
   name: string
   pokemon: { pokemon: NamedAPIResource; slot: number }[]
+}
+
+export interface AbilityDetail {
+  id: number
+  name: string
+  names: { name: string; language: NamedAPIResource }[]
 }
 
 export class PokeApiError extends Error {

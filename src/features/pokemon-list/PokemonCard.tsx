@@ -37,25 +37,31 @@ export function PokemonCard({ id, name }: PokemonCardProps) {
   const mainType = pokemon.types[0]?.type.name ?? 'normal'
   const theme = getTypeTheme(mainType)
   const sprite =
-    pokemon.sprites.other?.['official-artwork']?.front_default ?? pokemon.sprites.front_default
+    pokemon.sprites.other?.dream_world?.front_default ??
+    pokemon.sprites.other?.home?.front_default ??
+    pokemon.sprites.front_default
 
   return (
     <Link to={`/pokemon/${pokemon.name}`} aria-label={`Ver detalle de ${pokemon.name}`}>
-      <Card gradient={theme.gradient} className="h-full p-5">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <span className="self-start text-xs font-semibold text-slate-400 dark:text-slate-500">
-            #{String(pokemon.id).padStart(3, '0')}
-          </span>
+      <Card gradient={theme.gradient} glowColor={theme.color} className="h-full p-5">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-3 right-1 select-none font-display text-6xl font-black leading-none opacity-15 dark:opacity-20"
+          style={{ color: theme.color }}
+        >
+          #{String(pokemon.id).padStart(3, '0')}
+        </span>
+        <div className="relative flex flex-col items-center gap-3 text-center">
           {sprite && (
             <motion.img
               layoutId={`pokemon-sprite-${pokemon.id}`}
               src={sprite}
               alt={`Sprite de ${pokemon.name}`}
               loading="lazy"
-              className="h-24 w-24 object-contain drop-shadow-md"
+              className="h-24 w-24 object-contain drop-shadow-[0_8px_10px_rgba(0,0,0,0.25)] transition-transform duration-300 group-hover:scale-110"
             />
           )}
-          <h3 className="text-base font-bold capitalize text-slate-900 dark:text-slate-100">
+          <h3 className="font-display text-sm font-bold capitalize tracking-wide text-slate-900 dark:text-slate-100">
             {pokemon.name}
           </h3>
           <div className="flex flex-wrap justify-center gap-2">

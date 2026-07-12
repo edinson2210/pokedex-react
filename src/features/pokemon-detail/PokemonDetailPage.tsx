@@ -39,8 +39,8 @@ export function PokemonDetailPage() {
   const mainType = pokemon.types[0]?.type.name ?? 'normal'
   const theme = getTypeTheme(mainType)
   const sprite = isShiny
-    ? (pokemon.sprites.other?.['official-artwork']?.front_shiny ?? pokemon.sprites.front_shiny)
-    : (pokemon.sprites.other?.['official-artwork']?.front_default ?? pokemon.sprites.front_default)
+    ? (pokemon.sprites.other?.home?.front_shiny ?? pokemon.sprites.front_shiny)
+    : (pokemon.sprites.other?.home?.front_default ?? pokemon.sprites.front_default)
 
   const flavorText = species?.flavor_text_entries
     .find((entry) => entry.language.name === 'es')
@@ -49,8 +49,15 @@ export function PokemonDetailPage() {
   const genus = species?.genera.find((g) => g.language.name === 'es')?.genus
 
   return (
-    <div className={`min-h-[calc(100svh-64px)] bg-gradient-to-b ${theme.gradient} bg-opacity-20`}>
-      <div className="mx-auto max-w-4xl px-4 pb-16 pt-8">
+    <div className="relative min-h-[calc(100svh-64px)] overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `radial-gradient(circle at 50% -10%, ${theme.color}33, transparent 55%)`,
+        }}
+      />
+      <div className="relative mx-auto max-w-4xl px-4 pb-16 pt-8">
         <Link
           to="/"
           className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-slate-700/80 hover:text-slate-900 dark:text-slate-200/80 dark:hover:text-white"
@@ -62,12 +69,17 @@ export function PokemonDetailPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="rounded-3xl border border-white/40 bg-white/70 p-6 shadow-xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70 sm:p-10"
+          style={{ boxShadow: `0 30px 60px -25px ${theme.color}80` }}
+          className="relative overflow-hidden rounded-3xl border border-white/40 bg-white/60 p-6 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:p-10"
         >
-          <div className="flex flex-col items-center gap-4 text-center">
-            <span className="text-sm font-semibold text-slate-400 dark:text-slate-500">
-              #{String(pokemon.id).padStart(3, '0')}
-            </span>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -top-6 right-2 select-none font-display text-8xl font-black leading-none opacity-10 sm:text-9xl"
+            style={{ color: theme.color }}
+          >
+            #{String(pokemon.id).padStart(3, '0')}
+          </span>
+          <div className="relative flex flex-col items-center gap-4 text-center">
 
             <AnimatePresence mode="wait">
               {sprite && (
@@ -85,7 +97,7 @@ export function PokemonDetailPage() {
               )}
             </AnimatePresence>
 
-            <h1 className="text-3xl font-extrabold capitalize text-slate-900 dark:text-slate-100">
+            <h1 className="font-display text-3xl font-extrabold capitalize tracking-wide text-slate-900 dark:text-slate-100">
               {pokemon.name}
             </h1>
             {genus && (
