@@ -14,16 +14,20 @@ import { useTypeIndex } from '../../hooks/useTypeIndex'
 
 const GRID_CLASSNAME = 'grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
 
-const GridList = forwardRef<HTMLDivElement, { style?: CSSProperties; children?: ReactNode }>(
-  ({ style, children, ...rest }, ref) => (
-    <div ref={ref} style={style} className={GRID_CLASSNAME} {...rest}>
-      {children}
-    </div>
-  ),
-)
+const GridList = forwardRef<
+  HTMLDivElement,
+  { style?: CSSProperties; children?: ReactNode; className?: string }
+>(({ style, children, className: _ignoredDefaultClassName, ...rest }, ref) => (
+  <div ref={ref} style={style} className={GRID_CLASSNAME} {...rest}>
+    {children}
+  </div>
+))
 GridList.displayName = 'GridList'
 
-const GridItem = forwardRef<HTMLDivElement, { children?: ReactNode }>(({ children, ...rest }, ref) => (
+const GridItem = forwardRef<
+  HTMLDivElement,
+  { children?: ReactNode; className?: string; style?: CSSProperties }
+>(({ children, className: _ignoredDefaultClassName, ...rest }, ref) => (
   <div ref={ref} {...rest}>
     {children}
   </div>
