@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import { VirtuosoGrid } from 'react-virtuoso'
 import { PokemonCard } from './PokemonCard'
 import { SearchBar } from './SearchBar'
 import { TypeFilter } from './TypeFilter'
@@ -8,7 +10,25 @@ import { ErrorState } from '../../components/ui/ErrorState'
 import { usePokemonList } from '../../hooks/usePokemonList'
 import { usePokemonNames } from '../../hooks/usePokemonNames'
 import { usePokemonByType } from '../../hooks/usePokemonByType'
-import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
+import { useTypeIndex } from '../../hooks/useTypeIndex'
+
+const GRID_CLASSNAME = 'grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
+
+const GridList = forwardRef<HTMLDivElement, { style?: CSSProperties; children?: ReactNode }>(
+  ({ style, children, ...rest }, ref) => (
+    <div ref={ref} style={style} className={GRID_CLASSNAME} {...rest}>
+      {children}
+    </div>
+  ),
+)
+GridList.displayName = 'GridList'
+
+const GridItem = forwardRef<HTMLDivElement, { children?: ReactNode }>(({ children, ...rest }, ref) => (
+  <div ref={ref} {...rest}>
+    {children}
+  </div>
+))
+GridItem.displayName = 'GridItem'
 
 export function PokemonListPage() {
   const [search, setSearch] = useState('')
@@ -17,11 +37,7 @@ export function PokemonListPage() {
   const { items, loading, loadingMore, error, hasMore, loadMore } = usePokemonList()
   const { names } = usePokemonNames()
   const { pokemons: typeResults, loading: typeLoading, error: typeError } = usePokemonByType(type)
-
-  const sentinelRef = useInfiniteScroll<HTMLDivElement>({
-    onIntersect: loadMore,
-    enabled: hasMore && !loading && !search && !type,
-  })
+  const { typeIndex } = useTypeIndex()
 
   const isFiltering = Boolean(search) || Boolean(type)
 
@@ -68,16 +84,53 @@ export function PokemonListPage() {
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {(loading && visibleItems.length === 0) || (isFiltering && typeLoading)
-          ? Array.from({ length: 12 }).map((_, i) => <PokemonCardSkeleton key={i} />)
-          : visibleItems.map((p) => <PokemonCard key={p.id} id={p.id} name={p.name} />)}
-        {!isFiltering &&
-          loadingMore &&
-          Array.from({ length: 6 }).map((_, i) => <PokemonCardSkeleton key={`more-${i}`} />)}
-      </div>
-
-      {!isFiltering && <div ref={sentinelRef} className="h-4 w-full" aria-hidden />}
+      {isFiltering ? (
+        <div className={GRID_CLASSNAME}>
+          {typeLoading
+            ? Array.from({ length: 12 }).map((_, i) => <PokemonCardSkeleton key={i} />)
+            : visibleItems.map((p) => {
+                const types = typeIndex.get(p.name)
+                return types ? (
+                  <PokemonCard key={p.id} id={p.id} name={p.name} types={types} />
+                ) : (
+                  <PokemonCardSkeleton key={p.id} number={p.id} />
+                )
+              })}
+        </div>
+      ) : loading && visibleItems.length === 0 ? (
+        <div className={GRID_CLASSNAME}>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <PokemonCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : (
+        <>
+          <VirtuosoGrid
+            useWindowScroll
+            data={visibleItems}
+            endReached={() => {
+              if (hasMore) loadMore()
+            }}
+            overscan={200}
+            components={{ List: GridList, Item: GridItem }}
+            itemContent={(_, item) => {
+              const types = typeIndex.get(item.name)
+              return types ? (
+                <PokemonCard id={item.id} name={item.name} types={types} />
+              ) : (
+                <PokemonCardSkeleton number={item.id} />
+              )
+            }}
+          />
+          {loadingMore && (
+            <div className={`mt-4 ${GRID_CLASSNAME}`}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <PokemonCardSkeleton key={`more-${i}`} />
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }

@@ -8,6 +8,7 @@ export interface PokemonListItem {
 }
 
 const PAGE_SIZE = 24
+const MAX_POKEMON_ID = 1025
 
 export function usePokemonList() {
   const [items, setItems] = useState<PokemonListItem[]>([])
@@ -27,10 +28,13 @@ export function usePokemonList() {
 
     try {
       const data = await getPokemonList(PAGE_SIZE, offsetRef.current)
-      const mapped = data.results.map((r) => ({ id: extractIdFromUrl(r.url), name: r.name }))
+      const mapped = data.results
+        .map((r) => ({ id: extractIdFromUrl(r.url), name: r.name }))
+        .filter((p) => p.id <= MAX_POKEMON_ID)
       setItems((prev) => (isInitial ? mapped : [...prev, ...mapped]))
+      const reachedEnd = offsetRef.current + PAGE_SIZE >= MAX_POKEMON_ID
       offsetRef.current += PAGE_SIZE
-      setHasMore(Boolean(data.next))
+      setHasMore(Boolean(data.next) && !reachedEnd)
     } catch (err) {
       const message =
         err instanceof PokeApiError ? err.message : 'No se pudo cargar la lista de Pokémon.'

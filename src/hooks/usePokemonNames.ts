@@ -6,6 +6,8 @@ export interface PokemonNameEntry {
   name: string
 }
 
+const MAX_POKEMON_ID = 1025
+
 let cache: PokemonNameEntry[] | null = null
 
 export function usePokemonNames() {
@@ -19,7 +21,9 @@ export function usePokemonNames() {
     getPokemonList(2000, 0)
       .then((data) => {
         if (cancelled) return
-        const mapped = data.results.map((r) => ({ id: extractIdFromUrl(r.url), name: r.name }))
+        const mapped = data.results
+          .map((r) => ({ id: extractIdFromUrl(r.url), name: r.name }))
+          .filter((p) => p.id <= MAX_POKEMON_ID)
         cache = mapped
         setNames(mapped)
       })
