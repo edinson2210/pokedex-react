@@ -44,7 +44,7 @@ export function Card({ children, className = '', gradient, glowColor, layoutId }
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-40 mix-blend-overlay dark:from-white/25 dark:opacity-30"
       />
-      <div className="relative">{children}</div>
+      <div className="relative h-full">{children}</div>
     </motion.div>
   )
 }

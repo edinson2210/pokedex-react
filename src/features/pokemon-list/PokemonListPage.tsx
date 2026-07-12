@@ -1,7 +1,5 @@
-import { forwardRef, useMemo, useState } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { VirtuosoGrid } from 'react-virtuoso'
 import { PokemonCard } from './PokemonCard'
 import { SearchBar } from './SearchBar'
 import { TypeFilter } from './TypeFilter'
@@ -11,28 +9,15 @@ import { usePokemonList } from '../../hooks/usePokemonList'
 import { usePokemonNames } from '../../hooks/usePokemonNames'
 import { usePokemonByType } from '../../hooks/usePokemonByType'
 import { useTypeIndex } from '../../hooks/useTypeIndex'
+import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
 
 const GRID_CLASSNAME = 'grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
 
-const GridList = forwardRef<
-  HTMLDivElement,
-  { style?: CSSProperties; children?: ReactNode; className?: string }
->(({ style, children, className: _ignoredDefaultClassName, ...rest }, ref) => (
-  <div ref={ref} style={style} className={GRID_CLASSNAME} {...rest}>
-    {children}
-  </div>
-))
-GridList.displayName = 'GridList'
-
-const GridItem = forwardRef<
-  HTMLDivElement,
-  { children?: ReactNode; className?: string; style?: CSSProperties }
->(({ children, className: _ignoredDefaultClassName, ...rest }, ref) => (
-  <div ref={ref} {...rest}>
-    {children}
-  </div>
-))
-GridItem.displayName = 'GridItem'
+// Virtualización nativa: el navegador se salta el render/layout de las cards
+// fuera de pantalla. contain-intrinsic-size reserva el alto de la card (h-72 =
+// 288px) para que la barra de scroll no baile. A diferencia de una librería de
+// virtualización JS, nada toca window.scroll — no puede haber saltos de scroll.
+const GRID_ITEM_CLASSNAME = '[content-visibility:auto] [contain-intrinsic-size:auto_288px]'
 
 export function PokemonListPage() {
   const [search, setSearch] = useState('')
@@ -44,6 +29,11 @@ export function PokemonListPage() {
   const { typeIndex } = useTypeIndex()
 
   const isFiltering = Boolean(search) || Boolean(type)
+
+  const sentinelRef = useInfiniteScroll<HTMLDivElement>({
+    onIntersect: loadMore,
+    enabled: hasMore && !loading && !isFiltering,
+  })
 
   const filteredResults = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase()
@@ -88,53 +78,27 @@ export function PokemonListPage() {
         </p>
       )}
 
-      {isFiltering ? (
-        <div className={GRID_CLASSNAME}>
-          {typeLoading
-            ? Array.from({ length: 12 }).map((_, i) => <PokemonCardSkeleton key={i} />)
-            : visibleItems.map((p) => {
-                const types = typeIndex.get(p.name)
-                return types ? (
-                  <PokemonCard key={p.id} id={p.id} name={p.name} types={types} />
-                ) : (
-                  <PokemonCardSkeleton key={p.id} number={p.id} />
-                )
-              })}
-        </div>
-      ) : loading && visibleItems.length === 0 ? (
-        <div className={GRID_CLASSNAME}>
-          {Array.from({ length: 12 }).map((_, i) => (
-            <PokemonCardSkeleton key={i} />
-          ))}
-        </div>
-      ) : (
-        <>
-          <VirtuosoGrid
-            useWindowScroll
-            data={visibleItems}
-            endReached={() => {
-              if (hasMore) loadMore()
-            }}
-            overscan={200}
-            components={{ List: GridList, Item: GridItem }}
-            itemContent={(_, item) => {
-              const types = typeIndex.get(item.name)
-              return types ? (
-                <PokemonCard id={item.id} name={item.name} types={types} />
-              ) : (
-                <PokemonCardSkeleton number={item.id} />
+      <div className={GRID_CLASSNAME}>
+        {(loading && visibleItems.length === 0) || (isFiltering && typeLoading)
+          ? Array.from({ length: 12 }).map((_, i) => <PokemonCardSkeleton key={i} />)
+          : visibleItems.map((p) => {
+              const types = typeIndex.get(p.name)
+              return (
+                <div key={p.id} className={GRID_ITEM_CLASSNAME}>
+                  {types ? (
+                    <PokemonCard id={p.id} name={p.name} types={types} />
+                  ) : (
+                    <PokemonCardSkeleton number={p.id} />
+                  )}
+                </div>
               )
-            }}
-          />
-          {loadingMore && (
-            <div className={`mt-4 ${GRID_CLASSNAME}`}>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <PokemonCardSkeleton key={`more-${i}`} />
-              ))}
-            </div>
-          )}
-        </>
-      )}
+            })}
+        {!isFiltering &&
+          loadingMore &&
+          Array.from({ length: 6 }).map((_, i) => <PokemonCardSkeleton key={`more-${i}`} />)}
+      </div>
+
+      {!isFiltering && <div ref={sentinelRef} className="h-4 w-full" aria-hidden />}
     </div>
   )
 }
