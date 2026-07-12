@@ -138,8 +138,8 @@ export function PokemonDetailPage() {
             </div>
           </div>
 
-          <div className="mt-10 grid gap-10 sm:grid-cols-2">
-            <section>
+          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 lg:col-span-2 lg:row-span-2">
               <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
                 Estadísticas
               </h2>
@@ -155,7 +155,7 @@ export function PokemonDetailPage() {
               </div>
             </section>
 
-            <section>
+            <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
               <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
                 Detalles
               </h2>
@@ -172,29 +172,32 @@ export function PokemonDetailPage() {
                     {pokemon.weight / 10} kg
                   </dd>
                 </div>
-                <div className="col-span-2">
-                  <dt className="text-slate-400 dark:text-slate-500">Habilidades</dt>
-                  <dd className="flex flex-wrap gap-x-2 gap-y-1 font-semibold capitalize text-slate-800 dark:text-slate-200">
-                    {abilities.map((a) => (
-                      <span key={a.name}>
-                        {a.translatedName}
-                        {a.isHidden && (
-                          <span
-                            className="ml-1 rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[0.6rem] font-semibold normal-case text-slate-500 dark:bg-slate-700/70 dark:text-slate-400"
-                            title="Habilidad oculta"
-                          >
-                            oculta
-                          </span>
-                        )}
-                      </span>
-                    ))}
-                  </dd>
-                </div>
               </dl>
             </section>
 
+            <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+              <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
+                Habilidades
+              </h2>
+              <div className="flex flex-wrap gap-x-2 gap-y-2 text-sm font-semibold capitalize text-slate-800 dark:text-slate-200">
+                {abilities.map((a) => (
+                  <span key={a.name}>
+                    {a.translatedName}
+                    {a.isHidden && (
+                      <span
+                        className="ml-1 rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[0.6rem] font-semibold normal-case text-slate-500 dark:bg-slate-700/70 dark:text-slate-400"
+                        title="Habilidad oculta"
+                      >
+                        oculta
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </div>
+            </section>
+
             {alternativeVarieties.length > 0 && (
-              <section className="sm:col-span-2">
+              <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:col-span-2 lg:col-span-3">
                 <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
                   Formas alternativas
                 </h2>
@@ -211,16 +214,16 @@ export function PokemonDetailPage() {
                 </div>
               </section>
             )}
-          </div>
 
-          {evolutionChain && (
-            <section className="mt-10">
-              <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
-                Cadena evolutiva
-              </h2>
-              <EvolutionChainView chain={evolutionChain} currentName={pokemon.name} />
-            </section>
-          )}
+            {evolutionChain && (
+              <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:col-span-2 lg:col-span-3">
+                <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
+                  Cadena evolutiva
+                </h2>
+                <EvolutionChainView chain={evolutionChain} currentName={pokemon.name} />
+              </section>
+            )}
+          </div>
         </motion.div>
       </div>
     </div>
