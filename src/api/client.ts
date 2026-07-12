@@ -1,5 +1,6 @@
 import { PokeApiError } from './types'
 import type {
+  AbilityDetail,
   EvolutionChain,
   Pokemon,
   PokemonListResponse,
@@ -54,6 +55,11 @@ export function getTypes(): Promise<{ results: { name: string; url: string }[] }
 
 export function getType(name: string): Promise<PokemonType> {
   return fetchJson<PokemonType>(`${BASE_URL}/type/${name}`)
+}
+
+export function getAbility(nameOrUrl: string): Promise<AbilityDetail> {
+  const url = nameOrUrl.startsWith('http') ? nameOrUrl : `${BASE_URL}/ability/${nameOrUrl}`
+  return fetchJson<AbilityDetail>(url)
 }
 
 export function extractIdFromUrl(url: string): number {

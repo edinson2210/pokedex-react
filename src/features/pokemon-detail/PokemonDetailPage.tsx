@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePokemonDetail } from '../../hooks/usePokemonDetail'
+import { usePokemonAbilities } from '../../hooks/usePokemonAbilities'
 import { Badge } from '../../components/ui/Badge'
 import { Skeleton } from '../../components/ui/Skeleton'
 import { ErrorState } from '../../components/ui/ErrorState'
@@ -15,6 +16,7 @@ export function PokemonDetailPage() {
   const { name } = useParams<{ name: string }>()
   const { pokemon, species, evolutionChain, loading, error } = usePokemonDetail(name)
   const [isShiny, setIsShiny] = useState(false)
+  const { abilities } = usePokemonAbilities(pokemon?.abilities ?? [])
 
   if (error) {
     return (
@@ -156,8 +158,20 @@ export function PokemonDetailPage() {
                 </div>
                 <div className="col-span-2">
                   <dt className="text-slate-400 dark:text-slate-500">Habilidades</dt>
-                  <dd className="font-semibold capitalize text-slate-800 dark:text-slate-200">
-                    {pokemon.abilities.map((a) => a.ability.name).join(', ')}
+                  <dd className="flex flex-wrap gap-x-2 gap-y-1 font-semibold capitalize text-slate-800 dark:text-slate-200">
+                    {abilities.map((a) => (
+                      <span key={a.name}>
+                        {a.translatedName}
+                        {a.isHidden && (
+                          <span
+                            className="ml-1 rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[0.6rem] font-semibold normal-case text-slate-500 dark:bg-slate-700/70 dark:text-slate-400"
+                            title="Habilidad oculta"
+                          >
+                            oculta
+                          </span>
+                        )}
+                      </span>
+                    ))}
                   </dd>
                 </div>
               </dl>
