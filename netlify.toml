@@ -1,0 +1,13 @@
+[build]
+  command = "pnpm install && pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# SPA con react-router: cualquier ruta debe resolver a index.html para que el
+# enrutado del lado del cliente funcione (si no, /pokemon/charizard da 404).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
