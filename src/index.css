@@ -4,6 +4,8 @@
 
 @theme {
   --font-sans: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Orbitron', 'Poppins', system-ui, sans-serif;
+  --font-pixel: 'Press Start 2P', 'Orbitron', system-ui, sans-serif;
 }
 
 @layer base {
@@ -12,8 +14,25 @@
   }
 
   body {
-    @apply bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    @apply text-slate-900 antialiased dark:text-slate-100;
     font-family: var(--font-sans);
+    background-color: #eef1fa;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(99, 144, 240, 0.16), transparent 40%),
+      radial-gradient(circle at 88% 15%, rgba(238, 129, 48, 0.14), transparent 38%),
+      radial-gradient(circle at 50% 100%, rgba(122, 199, 76, 0.12), transparent 45%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ccircle cx='60' cy='60' r='38' fill='none' stroke='%23000000' stroke-opacity='0.035' stroke-width='6'/%3E%3Crect x='4' y='57' width='112' height='6' fill='%23000000' fill-opacity='0.035'/%3E%3Ccircle cx='60' cy='60' r='10' fill='none' stroke='%23000000' stroke-opacity='0.05' stroke-width='4'/%3E%3C/svg%3E");
+    background-attachment: fixed, fixed, fixed, fixed;
+  }
+
+  .dark body,
+  html.dark body {
+    background-color: #0b1020;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(99, 144, 240, 0.22), transparent 40%),
+      radial-gradient(circle at 88% 15%, rgba(238, 129, 48, 0.16), transparent 38%),
+      radial-gradient(circle at 50% 100%, rgba(122, 199, 76, 0.14), transparent 45%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Ccircle cx='60' cy='60' r='38' fill='none' stroke='%23ffffff' stroke-opacity='0.04' stroke-width='6'/%3E%3Crect x='4' y='57' width='112' height='6' fill='%23ffffff' fill-opacity='0.04'/%3E%3Ccircle cx='60' cy='60' r='10' fill='none' stroke='%23ffffff' stroke-opacity='0.06' stroke-width='4'/%3E%3C/svg%3E");
   }
 
   #root {

@@ -33,10 +33,11 @@ export function TypeFilter({ selected, onSelect }: TypeFilterProps) {
             type="button"
             onClick={() => onSelect(isActive ? null : type)}
             aria-pressed={isActive}
-            className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition"
+            className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white transition"
             style={{
               backgroundColor: theme.color,
               opacity: isActive ? 1 : 0.55,
+              boxShadow: isActive ? `0 6px 16px -4px ${theme.color}b3` : undefined,
             }}
           >
             {theme.label}
