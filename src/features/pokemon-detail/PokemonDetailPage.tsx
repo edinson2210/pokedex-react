@@ -12,6 +12,17 @@ import { ShinyToggle } from './ShinyToggle'
 import { CryButton } from './CryButton'
 import { getTypeTheme } from '../../lib/pokemonTypes'
 
+function parseVarietyLabel(varietyName: string, baseName: string): string {
+  const suffix = varietyName.startsWith(`${baseName}-`)
+    ? varietyName.slice(baseName.length + 1)
+    : varietyName
+
+  return suffix
+    .split('-')
+    .map((part) => (part === 'gmax' ? 'Gigamax' : part.charAt(0).toUpperCase() + part.slice(1)))
+    .join(' ')
+}
+
 export function PokemonDetailPage() {
   const { name } = useParams<{ name: string }>()
   const { pokemon, species, evolutionChain, loading, error } = usePokemonDetail(name)
@@ -49,6 +60,11 @@ export function PokemonDetailPage() {
     ?.flavor_text.replace(/\f|\n/g, ' ')
 
   const genus = species?.genera.find((g) => g.language.name === 'es')?.genus
+
+  const alternativeVarieties =
+    species && species.varieties.length > 1
+      ? species.varieties.filter((v) => !v.is_default)
+      : []
 
   return (
     <div className="relative min-h-[calc(100svh-64px)] overflow-hidden">
@@ -176,6 +192,25 @@ export function PokemonDetailPage() {
                 </div>
               </dl>
             </section>
+
+            {alternativeVarieties.length > 0 && (
+              <section className="sm:col-span-2">
+                <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
+                  Formas alternativas
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {alternativeVarieties.map((variety) => (
+                    <Link
+                      key={variety.pokemon.name}
+                      to={`/pokemon/${variety.pokemon.name}`}
+                      className="rounded-full border border-white/40 bg-white/60 px-4 py-1.5 text-sm font-semibold capitalize text-slate-800 shadow-sm backdrop-blur-xl transition hover:scale-105 hover:shadow-md dark:border-white/10 dark:bg-white/10 dark:text-slate-100"
+                    >
+                      {parseVarietyLabel(variety.pokemon.name, pokemon.species.name)}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
 
           {evolutionChain && (
