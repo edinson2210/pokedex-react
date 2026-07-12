@@ -61,10 +61,8 @@ export function PokemonDetailPage() {
 
   const genus = species?.genera.find((g) => g.language.name === 'es')?.genus
 
-  const alternativeVarieties =
-    species && species.varieties.length > 1
-      ? species.varieties.filter((v) => !v.is_default)
-      : []
+  const varieties = species && species.varieties.length > 1 ? species.varieties : []
+  const isAlternateForm = Boolean(species && pokemon.name !== species.name)
 
   return (
     <div className="relative min-h-[calc(100svh-64px)] overflow-hidden">
@@ -77,10 +75,10 @@ export function PokemonDetailPage() {
       />
       <div className="relative mx-auto max-w-4xl px-4 pb-16 pt-8">
         <Link
-          to="/"
+          to={isAlternateForm ? `/pokemon/${species!.name}` : '/'}
           className="mb-6 inline-flex items-center gap-1 text-sm font-semibold text-slate-700/80 hover:text-slate-900 dark:text-slate-200/80 dark:hover:text-white"
         >
-          ← Volver
+          ← Volver{isAlternateForm ? ` a ${species!.name}` : ''}
         </Link>
 
         <motion.div
@@ -196,21 +194,42 @@ export function PokemonDetailPage() {
               </div>
             </section>
 
-            {alternativeVarieties.length > 0 && (
+            {varieties.length > 0 && (
               <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:col-span-2 lg:col-span-3">
                 <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
                   Formas alternativas
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {alternativeVarieties.map((variety) => (
-                    <Link
-                      key={variety.pokemon.name}
-                      to={`/pokemon/${variety.pokemon.name}`}
-                      className="rounded-full border border-white/40 bg-white/60 px-4 py-1.5 text-sm font-semibold capitalize text-slate-800 shadow-sm backdrop-blur-xl transition hover:scale-105 hover:shadow-md dark:border-white/10 dark:bg-white/10 dark:text-slate-100"
-                    >
-                      {parseVarietyLabel(variety.pokemon.name, pokemon.species.name)}
-                    </Link>
-                  ))}
+                  {varieties.map((variety) => {
+                    const isActive = variety.pokemon.name === pokemon.name
+                    const label = variety.is_default
+                      ? 'Original'
+                      : parseVarietyLabel(variety.pokemon.name, pokemon.species.name)
+
+                    if (isActive) {
+                      return (
+                        <span
+                          key={variety.pokemon.name}
+                          aria-current="true"
+                          title="Forma seleccionada"
+                          style={{ boxShadow: `0 0 0 2px ${theme.color}99` }}
+                          className="cursor-default rounded-full border border-white/60 bg-white/80 px-4 py-1.5 text-sm font-semibold capitalize text-slate-900 dark:border-white/20 dark:bg-white/20 dark:text-white"
+                        >
+                          {label}
+                        </span>
+                      )
+                    }
+
+                    return (
+                      <Link
+                        key={variety.pokemon.name}
+                        to={`/pokemon/${variety.pokemon.name}`}
+                        className="rounded-full border border-white/40 bg-white/60 px-4 py-1.5 text-sm font-semibold capitalize text-slate-800 shadow-sm backdrop-blur-xl transition hover:scale-105 hover:shadow-md dark:border-white/10 dark:bg-white/10 dark:text-slate-100"
+                      >
+                        {label}
+                      </Link>
+                    )
+                  })}
                 </div>
               </section>
             )}
