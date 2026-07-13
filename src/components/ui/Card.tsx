@@ -23,7 +23,7 @@ export function Card({ children, className = '', gradient, glowColor, layoutId }
             }
           : undefined
       }
-      className={`group relative overflow-hidden rounded-3xl border border-white/40 bg-white/50 shadow-lg backdrop-blur-xl transition-shadow duration-300 dark:border-white/10 dark:bg-white/5 ${className}`}
+      className={`group relative overflow-hidden rounded-3xl border border-white/40 bg-white/50 shadow-lg backdrop-blur-xl transition-shadow duration-300 [clip-path:inset(0_round_1.5rem)] dark:border-white/10 dark:bg-white/5 ${className}`}
     >
       {gradient && (
         <>
