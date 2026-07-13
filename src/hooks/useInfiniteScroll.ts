@@ -11,7 +11,10 @@ export function useInfiniteScroll<T extends HTMLElement>({
 }: UseInfiniteScrollOptions) {
   const sentinelRef = useRef<T | null>(null)
   const onIntersectRef = useRef(onIntersect)
-  onIntersectRef.current = onIntersect
+
+  useEffect(() => {
+    onIntersectRef.current = onIntersect
+  })
 
   useEffect(() => {
     if (!enabled || !sentinelRef.current) return
