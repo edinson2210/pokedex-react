@@ -31,6 +31,31 @@ function spriteUrl(id: number): string {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
 }
 
+function animatedSpriteUrl(id: number): string {
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`
+}
+
+// Los sprites animados (estilo Gen5) no existen para todos los Pokémon —
+// sobre todo faltan desde la Gen 6 en adelante. Se intenta primero el
+// animado y, si falla la carga, se cae al sprite estático sin fetch extra.
+function EvolutionSprite({ id, name }: { id: number; name: string }) {
+  const [src, setSrc] = useState(() => animatedSpriteUrl(id))
+
+  useEffect(() => {
+    setSrc(animatedSpriteUrl(id))
+  }, [id])
+
+  return (
+    <img
+      src={src}
+      onError={() => setSrc((current) => (current === spriteUrl(id) ? current : spriteUrl(id)))}
+      alt={`Sprite de ${name}`}
+      loading="lazy"
+      className="h-16 w-16 object-contain"
+    />
+  )
+}
+
 function formatDisplayName(name: string): string {
   return name
     .split('-')
@@ -106,12 +131,7 @@ export function EvolutionChainView({ chain, currentName, regionalSuffix }: Evolu
                     : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
                 }`}
               >
-                <img
-                  src={spriteUrl(pokemon.id)}
-                  alt={`Sprite de ${pokemon.name}`}
-                  loading="lazy"
-                  className="h-16 w-16 object-contain"
-                />
+                <EvolutionSprite id={pokemon.id} name={pokemon.name} />
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                   {formatDisplayName(pokemon.name)}
                 </span>
