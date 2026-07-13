@@ -8,6 +8,7 @@ import { Skeleton } from '../../components/ui/Skeleton'
 import { ErrorState } from '../../components/ui/ErrorState'
 import { StatBar } from './StatBar'
 import { EvolutionChainView } from './EvolutionChainView'
+import { detectRegionalSuffix } from '../../lib/regionalForms'
 import { ShinyToggle } from './ShinyToggle'
 import { CryButton } from './CryButton'
 import { getTypeTheme } from '../../lib/pokemonTypes'
@@ -239,7 +240,11 @@ export function PokemonDetailPage() {
                 <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
                   Cadena evolutiva
                 </h2>
-                <EvolutionChainView chain={evolutionChain} currentName={pokemon.name} />
+                <EvolutionChainView
+                  chain={evolutionChain}
+                  currentName={pokemon.name}
+                  regionalSuffix={detectRegionalSuffix(pokemon.name)}
+                />
               </section>
             )}
           </div>

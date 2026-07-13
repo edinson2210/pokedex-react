@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getPokemonByName } from '../../api/client'
 import type { EvolutionChain, EvolutionChainLink } from '../../api/types'
 
 interface EvolutionStage {
@@ -29,13 +31,57 @@ function spriteUrl(id: number): string {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
 }
 
+function formatDisplayName(name: string): string {
+  return name
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
 interface EvolutionChainViewProps {
   chain: EvolutionChain
   currentName: string
+  regionalSuffix?: string | null
 }
 
-export function EvolutionChainView({ chain, currentName }: EvolutionChainViewProps) {
-  const stages = flattenChain(chain.chain)
+export function EvolutionChainView({ chain, currentName, regionalSuffix }: EvolutionChainViewProps) {
+  const baseStages = flattenChain(chain.chain)
+  const [stages, setStages] = useState(baseStages)
+
+  useEffect(() => {
+    setStages(flattenChain(chain.chain))
+
+    if (!regionalSuffix) return
+
+    let cancelled = false
+
+    async function resolveRegionalStages() {
+      const resolved = await Promise.all(
+        baseStages.map((group) =>
+          Promise.all(
+            group.map(async (stage) => {
+              try {
+                const regional = await getPokemonByName(`${stage.name}-${regionalSuffix}`)
+                return { name: regional.name, id: regional.id }
+              } catch {
+                // Esta etapa no tiene forma regional (ej. algunas líneas solo
+                // regionalizan un tramo) — se mantiene la especie base.
+                return stage
+              }
+            }),
+          ),
+        ),
+      )
+      if (!cancelled) setStages(resolved)
+    }
+
+    void resolveRegionalStages()
+
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain, regionalSuffix])
 
   if (stages.length <= 1) {
     return (
@@ -66,8 +112,8 @@ export function EvolutionChainView({ chain, currentName }: EvolutionChainViewPro
                   loading="lazy"
                   className="h-16 w-16 object-contain"
                 />
-                <span className="text-xs font-semibold capitalize text-slate-700 dark:text-slate-200">
-                  {pokemon.name}
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                  {formatDisplayName(pokemon.name)}
                 </span>
               </Link>
             ))}
