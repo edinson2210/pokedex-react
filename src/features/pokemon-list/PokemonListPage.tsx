@@ -17,7 +17,15 @@ const GRID_CLASSNAME = 'grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:
 // fuera de pantalla. contain-intrinsic-size reserva el alto de la card (h-72 =
 // 288px) para que la barra de scroll no baile. A diferencia de una librería de
 // virtualización JS, nada toca window.scroll — no puede haber saltos de scroll.
-const GRID_ITEM_CLASSNAME = '[content-visibility:auto] [contain-intrinsic-size:auto_288px]'
+//
+// content-visibility:auto implica "contain: paint", que recorta cualquier
+// pintado fuera de la padding-box del elemento — incluido el crecimiento de
+// la card al hacer hover (scale + y:-8 de Card.tsx). Por eso se ve truncada
+// arriba. El padding agrega margen de maniobra dentro de la padding-box (zona
+// segura de pintado) y el margin negativo lo cancela para no alterar el
+// layout del grid.
+const GRID_ITEM_CLASSNAME =
+  '-m-4 p-4 [content-visibility:auto] [contain-intrinsic-size:auto_320px]'
 
 export function PokemonListPage() {
   const [search, setSearch] = useState('')
