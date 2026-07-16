@@ -27,22 +27,22 @@ export function PokemonCard({ id, name, types }: PokemonCardProps) {
 
   return (
     <Link to={`/pokemon/${name}`} aria-label={`Ver detalle de ${name}`}>
-      <Card gradient={theme.gradient} glowColor={theme.color} className="h-72 p-5">
+      <Card gradient={theme.gradient} glowColor={theme.color} className="min-h-72 p-5">
         <span
           aria-hidden
-          className="pointer-events-none absolute -top-3 right-1 select-none font-display text-6xl font-black leading-none opacity-15 dark:opacity-20"
+          className="pointer-events-none absolute -top-2 right-1 select-none font-display text-4xl font-black leading-none opacity-15 sm:-top-3 sm:text-5xl lg:text-6xl dark:opacity-20"
           style={{ color: theme.color }}
         >
           #{String(id).padStart(3, '0')}
         </span>
         {/*
-          Alto fijo + distribución justify-between: VirtuosoGrid estima el
-          tamaño de fila a partir del alto de los items ya montados. Si la
-          altura varía según la cantidad de badges de tipo, esa estimación
-          cambia en cada tanda cargada y el scroll "salta". Todas las cards
-          deben medir exactamente lo mismo.
+          min-h en vez de alto fijo: con content-visibility (ver
+          PokemonListPage) ya no hace falta que todas las cards midan
+          exactamente lo mismo, así que en pantallas angostas los badges de
+          tipo pueden envolver a una segunda línea sin perder visibilidad
+          (antes quedaban recortados por una altura fija + overflow-hidden).
         */}
-        <div className="relative flex h-full flex-col items-center justify-between gap-2 text-center">
+        <div className="relative flex h-full min-h-[15.5rem] flex-col items-center justify-between gap-2 text-center">
           <motion.img
             layoutId={`pokemon-sprite-${id}`}
             src={spriteSrc}
@@ -54,7 +54,7 @@ export function PokemonCard({ id, name, types }: PokemonCardProps) {
           <h3 className="line-clamp-1 w-full font-display text-sm font-bold capitalize tracking-wide text-slate-900 dark:text-slate-100">
             {name}
           </h3>
-          <div className="flex h-8 flex-wrap items-center justify-center gap-2 overflow-hidden">
+          <div className="flex min-h-8 flex-wrap items-center justify-center gap-1.5 sm:gap-2">
             {types.map((t) => (
               <Badge key={t} type={t} />
             ))}

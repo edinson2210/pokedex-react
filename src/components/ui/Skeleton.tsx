@@ -20,7 +20,7 @@ interface PokemonCardSkeletonProps {
 
 export function PokemonCardSkeleton({ number }: PokemonCardSkeletonProps = {}) {
   return (
-    <div className="flex h-72 flex-col items-center justify-between gap-2 rounded-3xl border border-white/40 bg-white/50 p-5 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+    <div className="flex min-h-72 flex-col items-center justify-between gap-2 rounded-3xl border border-white/40 bg-white/50 p-5 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
       {number !== undefined && (
         <span className="self-start text-xs font-semibold text-slate-300 dark:text-slate-600">
           #{String(number).padStart(3, '0')}
