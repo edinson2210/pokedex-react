@@ -50,7 +50,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="Buscar por nombre..."
-          className="w-full min-w-0 bg-transparent px-2 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+          className="w-full min-w-0 bg-transparent px-2 py-2 text-base text-slate-900 outline-none placeholder:text-slate-400 sm:text-sm dark:text-slate-100 dark:placeholder:text-slate-500"
         />
       </motion.div>
     </div>
