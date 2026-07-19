@@ -4,6 +4,7 @@ import { Header } from './components/Header'
 import { PokemonListPage } from './features/pokemon-list/PokemonListPage'
 import { PokemonDetailPage } from './features/pokemon-detail/PokemonDetailPage'
 import { ErrorState } from './components/ui/ErrorState'
+import { ScrollToTopButton } from './components/ui/ScrollToTopButton'
 import { useTypeIndex } from './hooks/useTypeIndex'
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           />
         </Routes>
       </main>
+      <ScrollToTopButton />
     </ThemeProvider>
   )
 }
