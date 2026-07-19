@@ -3,7 +3,9 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
+import { RarityBadge } from '../../components/ui/RarityBadge'
 import { getTypeTheme } from '../../lib/pokemonTypes'
+import { getRarity } from '../../lib/legendaryPokemon'
 
 interface PokemonCardProps {
   id: number
@@ -24,6 +26,7 @@ export function PokemonCard({ id, name, types }: PokemonCardProps) {
 
   const mainType = types[0] ?? 'normal'
   const theme = getTypeTheme(mainType)
+  const rarity = getRarity(name)
 
   return (
     <Link to={`/pokemon/${name}`} aria-label={`Ver detalle de ${name}`}>
@@ -35,6 +38,7 @@ export function PokemonCard({ id, name, types }: PokemonCardProps) {
         >
           #{String(id).padStart(3, '0')}
         </span>
+        {rarity && <RarityBadge kind={rarity} className="absolute left-2 top-2" />}
         {/*
           min-h en vez de alto fijo: con content-visibility (ver
           PokemonListPage) ya no hace falta que todas las cards midan
