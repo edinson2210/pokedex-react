@@ -3,7 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePokemonDetail } from '../../hooks/usePokemonDetail'
 import { usePokemonAbilities } from '../../hooks/usePokemonAbilities'
+import { useTypeEffectiveness } from '../../hooks/useTypeEffectiveness'
 import { Badge } from '../../components/ui/Badge'
+import { RarityBadge } from '../../components/ui/RarityBadge'
 import { Skeleton } from '../../components/ui/Skeleton'
 import { ErrorState } from '../../components/ui/ErrorState'
 import { StatBar } from './StatBar'
@@ -29,6 +31,7 @@ export function PokemonDetailPage() {
   const { pokemon, species, evolutionChain, loading, error } = usePokemonDetail(name)
   const [isShiny, setIsShiny] = useState(false)
   const { abilities } = usePokemonAbilities(pokemon?.abilities ?? [])
+  const effectiveness = useTypeEffectiveness(pokemon?.types.map((t) => t.type.name) ?? [])
 
   if (error) {
     return (
@@ -121,10 +124,12 @@ export function PokemonDetailPage() {
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{genus}</p>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {pokemon.types.map((t) => (
                 <Badge key={t.type.name} type={t.type.name} />
               ))}
+              {species?.is_mythical && <RarityBadge kind="mythical" />}
+              {!species?.is_mythical && species?.is_legendary && <RarityBadge kind="legendary" />}
             </div>
 
             {flavorText && (
@@ -194,6 +199,55 @@ export function PokemonDetailPage() {
                 ))}
               </div>
             </section>
+
+            {effectiveness &&
+              (effectiveness.weak.length > 0 ||
+                effectiveness.resistant.length > 0 ||
+                effectiveness.immune.length > 0) && (
+                <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:col-span-2 lg:col-span-3">
+                  <h2 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">
+                    Debilidades y resistencias
+                  </h2>
+                  <div className="flex flex-col gap-3">
+                    {effectiveness.weak.length > 0 && (
+                      <div>
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                          Débil contra
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {effectiveness.weak.map(({ type, multiplier }) => (
+                            <Badge key={type} type={type} suffix={`×${multiplier}`} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {effectiveness.resistant.length > 0 && (
+                      <div>
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                          Resiste
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {effectiveness.resistant.map(({ type, multiplier }) => (
+                            <Badge key={type} type={type} suffix={`×${multiplier}`} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {effectiveness.immune.length > 0 && (
+                      <div>
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                          Inmune a
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {effectiveness.immune.map((type) => (
+                            <Badge key={type} type={type} suffix="×0" />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
 
             {varieties.length > 0 && (
               <section className="rounded-2xl border border-white/40 bg-white/40 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 sm:col-span-2 lg:col-span-3">

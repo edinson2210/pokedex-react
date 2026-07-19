@@ -85,6 +85,8 @@ export interface PokemonSpecies {
   evolution_chain: { url: string }
   color: NamedAPIResource
   varieties: PokemonSpeciesVariety[]
+  is_legendary: boolean
+  is_mythical: boolean
 }
 
 export interface EvolutionDetail {
@@ -104,10 +106,20 @@ export interface EvolutionChain {
   chain: EvolutionChainLink
 }
 
+export interface TypeDamageRelations {
+  double_damage_from: NamedAPIResource[]
+  double_damage_to: NamedAPIResource[]
+  half_damage_from: NamedAPIResource[]
+  half_damage_to: NamedAPIResource[]
+  no_damage_from: NamedAPIResource[]
+  no_damage_to: NamedAPIResource[]
+}
+
 export interface PokemonType {
   id: number
   name: string
   pokemon: { pokemon: NamedAPIResource; slot: number }[]
+  damage_relations: TypeDamageRelations
 }
 
 export interface AbilityDetail {
